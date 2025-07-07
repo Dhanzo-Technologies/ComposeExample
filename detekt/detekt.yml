@@ -1,0 +1,46 @@
+build:
+  maxIssues: 0
+  weights:
+    complexity: 2
+    LongParameterList: 1
+    style: 1
+
+config:
+  validation: true
+
+processors:
+  active: true
+  exclude:
+    - 'FunctionCountProcessor'
+    - 'PropertyCountProcessor'
+
+Compose:
+  ComposeModifierOrder:
+    active: true
+    autoCorrect: true
+  ComposeMultipleContentEmitters:
+    active: true
+  ComposeModifierWithoutDefault:
+    active: true
+  ComposeUnstableCollections:
+    active: true
+  ComposeViewModelForwarding:
+    active: true
+  ComposeParameterOrder:
+    active: true
+  ComposeContentEmitterReturningValues:
+    active: true
+  ComposeFunctionNaming:
+    active: true
+  ComposeViewModelInjection:
+    active: true
+  ComposeMultipleModifiers:
+    active: true
+  ComposeDefaultParameterOrder:
+    active: true
+  ComposeModifierMissing:
+    active: true
+  ComposePreviewPublic:
+    active: true
+  ComposeNaming:
+    active: true
