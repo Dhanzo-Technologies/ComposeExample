@@ -24,11 +24,14 @@ jobs:
       - name: Grant execute permission to Gradlew
         run: chmod +x ./gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
+      - name: Run Delekt (Detekt is now analyzing your Kotlin code for potential issues!)
+        run: ./gradlew detekt
 
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
