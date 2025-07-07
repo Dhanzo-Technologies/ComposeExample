@@ -6,11 +6,10 @@ on:
       - main
 
 permissions:
-  contents: write  # 💡 This enables tag pushing and release creation
+  contents: write
 
 jobs:
   build-and-release:
-    name: Build and Release APK
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +20,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'  # Change if needed
+          java-version: '17'
 
       - name: Decode Keystore
         run: |
@@ -29,37 +28,49 @@ jobs:
 
       - name: Create keystore.properties
         run: |
-          echo "storeFile=keystore.jks" > keystore.properties
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> keystore.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
-
-      - name: Grant execute permission to gradlew
-        run: chmod +x ./gradlew
+          echo "storeFile=keystore.jks" > app/keystore.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> app/keystore.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> app/keystore.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> app/keystore.properties
 
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
-      - name: Generate Release Tag Name
-        id: release_tag
+      - name: Generate release tag
+        id: tag
         run: |
           TAG_NAME="release-$(date +'%Y-%m-%d-%H%M')"
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: Create Git Tag
         run: |
-          git config user.name "vk-git"
-          git config user.email "vivekpdev@gmail.com"
-          git tag ${{ steps.release_tag.outputs.tag_name }}
-          git push origin ${{ steps.release_tag.outputs.tag_name }}
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag ${{ steps.tag.outputs.tag_name }}
+          git push origin ${{ steps.tag.outputs.tag_name }}
 
-      - name: Create GitHub Release and Upload APK
+      - name: Generate changelog from commits
+        id: changelog
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ || echo "")
+          echo "Previous tag: $PREV_TAG"
+          if [ -z "$PREV_TAG" ]; then
+            LOG=$(git log --pretty=format:"- %s" HEAD)
+          else
+            LOG=$(git log --pretty=format:"- %s" "$PREV_TAG"..HEAD)
+          fi
+          echo "log<<EOF" >> $GITHUB_OUTPUT
+          echo "$LOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.release_tag.outputs.tag_name }}
-          name: Release ${{ steps.release_tag.outputs.tag_name }}
+          tag_name: ${{ steps.tag.outputs.tag_name }}
+          name: Release ${{ steps.tag.outputs.tag_name }}
+          body: ${{ steps.changelog.outputs.log }}
           files: |
             app/build/outputs/apk/release/app-release.apk
-            resources/**  # optional
+            resources/**
         env:
           GITHUB_TOKEN: ${{ secrets.ACCOUNT_TOKEN }}
