@@ -29,7 +29,7 @@ import com.valtech.composeexample.ui.theme.PosFinalProjectTheme
 
 @Composable
 fun ProductDetails(navHostController: NavHostController, modifier: Modifier = Modifier) {
-    val productId = "" // intent.getIntExtra("productId", 0)
+    // val productId = "" // intent.getIntExtra("productId", 0)
     val productName = "" // intent.getStringExtra("productName")
     val productPrice = 10.01 // intent.getDoubleExtra("productPrice", 0.0)
     val productImageResId = "" // intent.getIntExtra("productImageResId", 0)

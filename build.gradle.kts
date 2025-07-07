@@ -29,3 +29,7 @@ tasks.register("installGitHooks", Exec::class.java) {
         logger.info("Git hook installed successfully.")
     }
 }
+
+afterEvaluate {
+    tasks.getByPath(":app:preBuild").dependsOn(":installGitHooks")
+}
