@@ -38,6 +38,16 @@ jobs:
       - name: Run Delekt (Detekt is now analyzing your Kotlin code for potential issues!)
         run: ./gradlew detekt
 
+      - name: Zip Delekt Report
+        run: |
+          zip -r detekt-report.zip app/build/reports/detekt
+
+      - name: Upload Detekt Report ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-report
+          path: detekt-report.zip
+
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
 
