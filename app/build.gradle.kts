@@ -102,5 +102,3 @@ detekt {
         }
     }
 }
-
-apply(from = "../scripts/git-hooks.gradle.kts")
