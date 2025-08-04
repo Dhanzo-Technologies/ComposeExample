@@ -31,7 +31,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'  # Adjust to your project
+          java-version: '17'
 
       - name: Decode Keystore
         run: |
