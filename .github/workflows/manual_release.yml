@@ -1,10 +1,20 @@
-name: PR to Develop Branch CI
+name: Manual Android Build
 
 on:
-  pull_request:
-    branches:
-      - develop
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to Build'
+        required: true
+        default: 'main'
+      buildType:
+        description: 'Build Type'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+          - debug
+          - release
 
 jobs:
   build:
@@ -12,8 +22,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Selected Branch Code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
 
       - name: Set up JDK
         uses: actions/setup-java@v4
@@ -51,11 +63,12 @@ jobs:
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
+      - name: Build APK
+        run: ./gradlew assemble${{ github.event.inputs.buildType }}
 
-      - name: Upload Debug APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: app-${{ github.event.inputs.buildType }}-apk
+          path: app/build/outputs/apk/${{ github.event.inputs.buildType }}/*.apk
+
