@@ -27,12 +27,20 @@ import androidx.navigation.NavHostController
 import com.valtech.composeexample.data.ProductDetail
 import com.valtech.composeexample.ui.theme.PosFinalProjectTheme
 
+const val TEST: Boolean = false
+
 @Composable
 fun ProductDetails(navHostController: NavHostController, modifier: Modifier = Modifier) {
-    val productId = "" // intent.getIntExtra("productId", 0)
+    val progressBar: Boolean = true
+
+    // val productId = "" // intent.getIntExtra("productId", 0)
     val productName = "" // intent.getStringExtra("productName")
     val productPrice = 10.01 // intent.getDoubleExtra("productPrice", 0.0)
     val productImageResId = "" // intent.getIntExtra("productImageResId", 0)
+
+    if (progressBar) {
+        print("progressBar")
+    }
 
     val productDetail = ProductDetail(
         nama = productName ?: "",

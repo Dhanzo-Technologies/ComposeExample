@@ -21,7 +21,7 @@ class Report : ComponentActivity() {
 @Composable
 fun POSReport(modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
+        modifier = modifier
     ) {
         TopAppBar(title = { Text(text = "Report") })
     }
