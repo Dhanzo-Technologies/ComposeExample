@@ -17,11 +17,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Card
-import androidx.compose.material.Scaffold
-import androidx.compose.material.TopAppBar
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,6 +83,7 @@ fun AppNavHost(navHostController: NavHostController, modifier: Modifier = Modifi
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun POSHomePage(navHostController: NavHostController, modifier: Modifier = Modifier) {
     val formattedTrans = NumberFormat.getCurrencyInstance(Locale("en", "IN"))
@@ -95,8 +99,9 @@ fun POSHomePage(navHostController: NavHostController, modifier: Modifier = Modif
                         fontSize = 18.sp
                     )
                 },
-                backgroundColor = Color(0xFFD8BFD8),
-                contentColor = Color.White
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                )
             )
         }
     ) { contentPending ->
@@ -146,7 +151,7 @@ fun POSHomePage(navHostController: NavHostController, modifier: Modifier = Modif
                     .height(200.dp)
                     .padding(16.dp),
                 shape = MaterialTheme.shapes.medium,
-                elevation = 4.dp
+                elevation = CardDefaults.cardElevation(4.dp)
             ) {
                 Column(
                     modifier = Modifier

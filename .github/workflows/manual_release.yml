@@ -1,0 +1,74 @@
+name: Manual Android Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to Build'
+        required: true
+        default: 'main'
+      buildType:
+        description: 'Build Type'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+          - debug
+          - release
+
+jobs:
+  build:
+    name: Build & Test on PR to Develop
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Selected Branch Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'  # Adjust to your project
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
+
+      - name: Create keystore.properties
+        run: |
+          echo "storeFile=keystore.jks" > keystore.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> keystore.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> keystore.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> keystore.properties
+
+      - name: Grant execute permission to Gradlew
+        run: chmod +x ./gradlew
+
+      - name: Run Delekt (Detekt is now analyzing your Kotlin code for potential issues!)
+        run: ./gradlew detekt
+
+      - name: Zip Delekt Report
+        run: |
+          zip -r detekt-report.zip app/build/reports/detekt
+
+      - name: Upload Detekt Report ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-report
+          path: detekt-report.zip
+
+      - name: Run Unit Tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Build APK
+        run: ./gradlew assemble${{ github.event.inputs.buildType }}
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-${{ github.event.inputs.buildType }}-apk
+          path: app/build/outputs/apk/${{ github.event.inputs.buildType }}/*.apk
+
